@@ -3,44 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mein GPT-Projekt</title>
+    <title>GPT-Integration</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            text-align: center;
             margin: 0;
             padding: 0;
-            text-align: center;
+            background-color: #f4f4f4;
         }
-        header {
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin: 1em 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
             background-color: #0078D7;
             color: white;
-            padding: 1em 0;
-        }
-        section {
-            margin: 2em;
-        }
-        a {
-            color: white;
-            background-color: #0078D7;
-            padding: 0.5em 1em;
-            text-decoration: none;
+            border: none;
             border-radius: 5px;
+            cursor: pointer;
         }
-        a:hover {
+        button:hover {
             background-color: #005bb5;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            width: 80%;
+            display: inline-block;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Willkommen zu meinem GPT-Projekt</h1>
-    </header>
-    <section>
-        <p>Hier kannst du auf mein GPT-Modell zugreifen:</p>
-        <a href="https://chatgpt.com/g/g-6744db3401e08191b57bdafa12ced230-financegpt" target="_blank">GPT starten</a>
-    </section>
+    <h1>GPT-Integration</h1>
+    <textarea id="userInput" placeholder="Schreibe deine Frage hier..."></textarea><br>
+    <button onclick="askGPT()">Senden</button>
+    <div id="response"></div>
+    <script>
+        async function askGPT() {
+            const input = document.getElementById("userInput").value;
+            const responseDiv = document.getElementById("response");
+
+            if (!input) {
+                responseDiv.textContent = "Bitte gib eine Frage ein.";
+                return;
+            }
+
+            responseDiv.textContent = "Lade Antwort...";
+
+            const apiKey = "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"; // Hier kommt dein API-Schlüssel rein
+            const apiUrl = "https://api.openai.com/v1/chat/completions";
+
+            const payload = {
+                model: "gpt-3.5-turbo",
+                messages: [{ role: "user", content: input }]
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                responseDiv.textContent = data.choices[0].message.content || "Keine Antwort erhalten.";
+            } catch (error) {
+                console.error(error);
+                responseDiv.textContent = "Fehler bei der Anfrage.";
+            }
+        }
+    </script>
 </body>
 </html>
-
-
